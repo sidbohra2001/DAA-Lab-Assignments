@@ -1,0 +1,38 @@
+#include<bits/stdc++.h>
+using namespace std;
+int parts(int a[], int l, int r, int* comp, int* swaps){
+    int p = a[r];
+    int i=l-1;
+    for(int j=l; j<r; j++){
+        *comp += 1;
+       if(p>a[r]){
+            i++;
+            swap(a[i], a[j]);
+            *swaps += 1;
+       }
+    }
+    swap(a[i+1], a[r]);
+    *swaps += 1;
+    return i+1;
+}
+void quick_sort(int a[], int l, int r, int* comp, int* swaps){
+    if(l<r){
+        int p = parts(a, l , r, comp, swaps);
+        quick_sort(a, l, p-1, comp, swaps);
+        quick_sort(a, p+1, r, comp, swaps);
+    }
+}
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n, comp=0, swaps=0;
+        cin>>n;
+        int arr[n];
+        for(int i=0; i<n; i++) cin>>arr[i];
+        quick_sort(arr, 0, n-1, &comp, &swaps);
+        for(int i=0; i<n; i++) cout<<arr[i]<<" ";
+        cout<<endl;
+        cout<< "Comparisons: " << comp << "\nSwaps: " << swaps << endl;
+    }
+}
