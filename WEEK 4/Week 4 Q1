@@ -1,0 +1,56 @@
+#include<bits/stdc++.h>
+using namespace std;
+void merge(int a[], int l, int mid,  int r, int* inv, int* comp){
+    int n=mid-l+1, m=r-mid;
+    int a1[n], a2[m];
+    for(int i=0; i<n; i++)
+        a1[i] = a[l+i];
+    for(int j=0; j<m; j++)
+        a2[j] = a[mid+1+j];
+    int i=0, j=0, k=l;
+    while(i<n && j<m){
+        *comp += 1;
+        if(a1[i]<a2[j]){
+            a[k] = a1[i];
+            i++;
+            k++;
+        }
+        else{
+            a[k] = a2[j];
+            j++;
+            k++;
+            *inv += n-i;
+        }
+    }
+    while(i<n){
+        a[k] = a1[i];
+        i++;
+        k++;
+    }
+    while(j<m){
+        a[k] = a2[j];
+        j++;
+        k++;
+    }
+}
+void merge_sort(int a[], int l, int r, int* inv, int* comp){
+    if(l<r){
+        int mid = l + (r-l)/2;
+        merge_sort(a, l, mid, inv, comp);
+        merge_sort(a, mid+1, r, inv, comp);
+        merge(a, l, mid, r, inv, comp);
+    }
+}
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n, inv=0, comp=0;
+        cin>>n;
+        int arr[n];
+        for(int i=0; i<n; i++)
+            cin>>arr[i];
+        merge_sort(arr, 0, n-1, &inv, &comp);
+        cout<<"Comparisons: "<<comp<<"\nInversions: "<<inv<<endl;
+    }
+}
