@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+using namespace std;
+int min_weight(bool used[], int weight[], int maxe){
+    int mini = INT_MAX,min_index;
+    for(int i = 0 ; i < maxe ; i++){
+        if(!used[i] && weight[i] < mini){
+            mini = weight[i];
+            min_index = i;
+        }
+    }
+    return min_index;
+}
+vector<int> prims_algo(vector<vector<int>>v, int s){
+    int weight[s];
+    bool used[s];
+    for(int i = 0 ; i < s ; i++) weight[i] = INT_MAX, used[i] = false;
+    weight[0] = 0;
+    vector<int> parent(s);
+    parent[0] = -1;
+    for(int i = 0 ; i < s-1 ; i++){
+        int min_ind = min_weight(used, weight, s);
+        used[min_ind] = true;
+        for(int j = 0 ; j < s ; j++){
+            if(v[min_ind][j] && !used[j] && v[min_ind][j]<weight[j]){
+                parent[j] = min_ind;
+                weight[j] = v[min_ind][j];
+            }
+        }
+    }
+    return parent;
+}
+int main(){
+    int ve, e;
+    cin >> ve >> e;
+    vector<vector<int>>v(ve);
+    for(int i = 0 ; i < ve ; i++) v[i] = vector<int>(ve);
+    int w,s,d,sum = 0;
+    for(int i = 0 ; i < e ; i++){
+        cin >> s >> d >> w;
+        v[s][d] = w;
+        v[d][s] = w;
+    }
+    vector<int>p = prims_algo(v,ve);
+    for(int i=1; i<ve; i++){
+        int w = v[p[i]][i];
+        //cout<<p[i]<<" "<<i<<endl;
+        sum += w;
+    }
+    cout<<"Minimum Sum : " << sum << endl;
+    return 0;
+}
