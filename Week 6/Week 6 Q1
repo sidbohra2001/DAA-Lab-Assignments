@@ -1,0 +1,36 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main(){
+    int v;
+    cin >> v;
+    int m[v][v];
+    for(int i = 0 ; i < v ; i++){
+        for(int j = 0 ; j < v ; j++)
+            cin >> m[i][j];
+    }
+    int s, d;
+    cin >> s >> d;
+    s--;
+    d--;
+    bool found = false, check[v]={false};
+    stack<int> st;
+    st.push(s);
+    while(!st.empty()){
+        int top = st.top();
+        st.pop();
+        check[top] = true;
+        if(top==d){
+            found=true;
+            break;
+        }
+        for(int i=0; i<v; i++){
+            if(m[top][i]==1 && !check[i])
+                st.push(i);
+        }
+    }
+    if(found)
+        cout<<"Yes Path Exists\n";
+    else
+        cout<<"No Such Path Exists\n";
+}
