@@ -1,0 +1,63 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int findp(int u, int parent[]){
+    if(parent[u] < 0)
+        return u;
+    else
+        return findp(parent[u],parent);
+}
+
+void unionByWeight(int s, int d, int parent[]){
+    if(findp(s,parent)!=findp(d,parent)){
+        if(findp(s,parent) < findp(d,parent)){
+            parent[findp(s,parent)]+=parent[findp(d,parent)];
+            parent[findp(d,parent)] = findp(s,parent);
+        }
+        else{
+            parent[findp(d,parent)]+=parent[findp(s,parent)];
+            parent[findp(s,parent)] = findp(d,parent);
+        }
+    }
+}
+
+vector<pair<int,pair<int,int>>> kruskals_algo(vector<pair<int,pair<int,int>>>v, int s){
+    int maxe = INT_MIN;
+    vector<pair<int,pair<int,int>>>result_ar;
+    for(int i = 0 ; i < s ; i++){
+        if(maxe < v[i].second.first)
+            maxe = v[i].second.first;
+        if(maxe < v[i].second.second)
+            maxe = v[i].second.second;
+    }
+    int parent[maxe+1];
+    for(int i = 0 ; i <= maxe ; i++) parent[i] = -1;
+    for(int i = 0 ; i < s ; i++){
+        if(findp(v[i].second.first,parent) != findp(v[i].second.second,parent)){
+            result_ar.push_back(v[i]);
+            unionByWeight(v[i].second.first, v[i].second.second, parent);
+        }
+    }
+    return result_ar;
+}
+
+int main(){
+    int sum = 0;
+    int v, e, w, s, d;
+    cin >> v >> e;
+    vector<pair<int,pair<int,int>>>ve, result_ar;
+    for(int i = 0 ; i < e ; i++){
+        cin >> s >> d >> w;
+        ve.push_back(make_pair(w,make_pair(s,d)));
+    }
+    sort(ve.begin(),ve.end());
+    //for(int i = 0 ; i < e ; i++)
+        //cout << ve[i].first << " " << ve[i].second.first << " " << ve[i].second.second << '\n';
+    result_ar = kruskals_algo(ve,e);
+    for(int i = 0 ; i < result_ar.size() ; i++){
+        //cout << result_ar[i].second.first << "--" << result_ar[i].second.second << '\n';
+        sum+=result_ar[i].first;
+    }
+    cout << "Minimum Weight Of MST : " << sum;
+    return 0;
+}
