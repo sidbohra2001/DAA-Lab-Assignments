@@ -1,39 +1,28 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-vector<vector<int>> find_paths(vector<vector<int>> weights, int n, int source){
-    vector<vector<int>> paths;
-    for(int i=0; i<n; i++){
-        paths.push_back({NULL, INT_MAX});
+bool processed[1000];
+vector<vector<int>> paths;
+
+void find_paths(vector<vector<int>> weights, int n, int source, int destination, int k, vector<int> path){
+    if(source==destination){
+        if(path.size()==k+1)
+            paths.push_back(path);
+        return;
     }
-    paths[0][1] = 0;
-    for(int a0=1; a0<n; a0++){
-        for(int i=0; i<n; i++){
-            for(int j=0; j<n; j++){
-                if(weights[i][j]!=0){
-                    if(paths[j][1] > paths[i][1]+weights[i][j]){
-                        paths[j][1] = paths[i][1]+weights[i][j];
-                        paths[j][0] = i;
-                    }
-                }
-            }
+    processed[source] = true;
+    for(int j=0; j<n; j++){
+        if(!processed[j] && weights[source][j]!=0){
+            path.push_back(j);
+            find_paths(weights, n, j, destination, k, path);
+            path.pop_back();
         }
     }
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(weights[i][j]!=0){
-                if(paths[j][1] > paths[i][1]+weights[i][j]){
-                    cout<<"Negative cycle detetcted\n";
-                    return  {};
-                }
-            }
-        }
-    }
-    return paths;
+    return;
 }
 
 int main(){
-    int n, num, source;
+    int n, num, source, destination, k;
     cin>>n;
     vector<vector<int>> weights;
     for(int i=0; i<n; i++){
@@ -44,16 +33,25 @@ int main(){
         }
         weights.push_back(temp);
     }
-    cin>>source;
+    cin>>source>>destination>>k;
     source--;
-    vector<vector<int>> path = find_paths(weights, weights.size(), source);
-    for(int i=0; i<n; i++) {
-        int node = i;
-        cout<<node+1<<" ";
-        while(node!=0){
-            node = path[node][0];
-            cout<<node+1<<" ";
+    destination--;
+    vector<int> path = {source};
+    find_paths(weights, weights.size(), source, destination, k, path);
+    int min_path = INT_MAX;
+    int min_index = -1;
+    for(int i=0; i<paths.size(); i++){
+        int sum=0;
+        for(int j=0; j<paths[i].size()-1; j++){
+            sum += weights[paths[i][j]][paths[i][j+1]];
         }
-        cout<<": "<<path[i][1]<<endl;
+        if(sum<min_path){
+            min_path = sum;
+            min_index = i;
+        }
     }
+    if(min_index == -1)
+        cout<<"No path of length k is available."<<endl;
+    else
+        cout<<"Weight of shortest path from ("<<source+1<<","<<destination+1<<") with "<<k<<" edges : "<<min_path<<endl;
 }
